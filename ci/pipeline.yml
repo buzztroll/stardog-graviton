@@ -3,15 +3,8 @@ resources:
 - name: dockerfile-repo
   type: git
   source:
-    paths: [ "ci/Dockerfile" ]
-    branch: {{repo-branch}}
-    uri: {{repo-uri}}
-
-- name: ci-repo
-  type: git
-  source:
-    branch: {{repo-branch}}
-    uri: {{repo-uri}}
+    branch: feature/pipeline2
+    uri: https://github.com/stardog-union/stardog-graviton.git
 
 - name: graviton-repo
   type: git
@@ -106,7 +99,7 @@ jobs:
   - aggregate:
     - get: ci-docker-image
       passed: [ build-docker ]
-    - get: ci-repo
+    - get: graviton-repo
     - get: linux-stage
       passed: [ build-graviton ]
       trigger: true
@@ -116,19 +109,19 @@ jobs:
     config:
       platform: linux
       inputs:
-      - name: ci-repo
+      - name: graviton-repo
       - name: linux-stage
       outputs:
       - name: envdir
       run:
-        path: ci-repo/ci/make-env.sh
+        path: graviton-repo/ci/make-env.sh
         args:
           - {{stardog-license}}
           - {{archiveuser}}
           - {{archivepw}}
           - {{stardogurl}}
           - {{stardog-version}}
-          - ci-repo
+          - graviton-repo
           - linux-stage
           - envdir
 
@@ -137,19 +130,19 @@ jobs:
     config:
       platform: linux
       inputs:
-      - name: ci-repo
+      - name: graviton-repo
       - name: envdir
       - name: linux-stage
       outputs:
       - name: launch-outdir
       run:
-        path: ci-repo/ci/start-cluster.sh
+        path: graviton-repo/ci/start-cluster.sh
         args:
           - {{skip-long-test}}
           - {{s3-access-key}}
           - {{s3-secret}}
           - {{stardog-version}}
-          - ci-repo
+          - graviton-repo
           - linux-stage
           - envdir
           - launch-outdir
@@ -159,18 +152,18 @@ jobs:
     config:
       platform: linux
       inputs:
-      - name: ci-repo
+      - name: graviton-repo
       - name: envdir
       - name: launch-outdir
       - name: linux-stage
       run:
-        path: ci-repo/ci/create-db.sh
+        path: graviton-repo/ci/create-db.sh
         args:
           - {{skip-long-test}}
           - {{s3-access-key}}
           - {{s3-secret}}
           - {{stardog-version}}
-          - ci-repo
+          - graviton-repo
           - linux-stage
           - envdir
           - launch-outdir
@@ -179,17 +172,17 @@ jobs:
     config:
       platform: linux
       inputs:
-      - name: ci-repo
+      - name: graviton-repo
       - name: envdir
       - name: launch-outdir
       - name: linux-stage
       run:
-        path: ci-repo/ci/stop-cluster.sh
+        path: graviton-repo/ci/stop-cluster.sh
         args:
           - {{skip-long-test}}
           - {{s3-access-key}}
           - {{s3-secret}}
-          - ci-repo
+          - graviton-repo
           - linux-stage
           - envdir
           - launch-outdir

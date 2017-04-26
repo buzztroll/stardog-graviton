@@ -10,9 +10,6 @@ resources:
 - name: ci-repo
   type: git
   source:
-    paths: [ "ci/build-graviton.sh", "ci/make-env.sh", "ci/start-cluster.sh",
-             "ci/create-db.sh", "ci/publish.sh", "ci/stop-cluster.sh",
-             "ci/rows.rdf", "ci/default.json.template", "ci/create_db.py"]
     branch: {{repo-branch}}
     uri: {{repo-uri}}
 

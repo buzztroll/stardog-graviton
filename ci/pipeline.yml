@@ -6,12 +6,24 @@ resources:
     paths: [ "ci/Dockerfile" ]
     branch: {{repo-branch}}
     uri: {{repo-uri}}
+    private_key: {{github_private_key}}
+
+- name: ci-repo
+  type: git
+  source:
+    paths: [ "ci/build-graviton.sh", "ci/make-env.sh", "ci/start-cluster.sh",
+             "ci/create-db.sh", "ci/stop-cluster.sh",
+             "ci/create_db.py", "ci/publish.sh", "ci/default.json.template" ]
+    branch: {{repo-branch}}
+    uri: {{repo-uri}}
+    private_key: {{github_private_key}}
 
 - name: graviton-repo
   type: git
   source:
     branch: {{repo-branch}}
     uri: {{repo-uri}}
+    private_key: {{github_private_key}}
 
 - name: ci-docker-image
   type: docker-image
@@ -100,7 +112,7 @@ jobs:
   - aggregate:
     - get: ci-docker-image
       passed: [ build-docker ]
-    - get: graviton-repo
+    - get: ci-repo
     - get: linux-stage
       passed: [ build-graviton ]
       trigger: true
@@ -110,19 +122,19 @@ jobs:
     config:
       platform: linux
       inputs:
-      - name: graviton-repo
+      - name: ci-repo
       - name: linux-stage
       outputs:
       - name: envdir
       run:
-        path: graviton-repo/ci/make-env.sh
+        path: ci-repo/ci/make-env.sh
         args:
           - {{stardog-license}}
           - {{archiveuser}}
           - {{archivepw}}
           - {{stardogurl}}
           - {{stardog-version}}
-          - graviton-repo
+          - ci-repo
           - linux-stage
           - envdir
 
@@ -131,19 +143,19 @@ jobs:
     config:
       platform: linux
       inputs:
-      - name: graviton-repo
+      - name: ci-repo
       - name: envdir
       - name: linux-stage
       outputs:
       - name: launch-outdir
       run:
-        path: graviton-repo/ci/start-cluster.sh
+        path: ci-repo/ci/start-cluster.sh
         args:
           - {{skip-long-test}}
           - {{s3-access-key}}
           - {{s3-secret}}
           - {{stardog-version}}
-          - graviton-repo
+          - ci-repo
           - linux-stage
           - envdir
           - launch-outdir
@@ -153,23 +165,61 @@ jobs:
     config:
       platform: linux
       inputs:
-      - name: graviton-repo
+      - name: ci-repo
       - name: envdir
       - name: launch-outdir
       - name: linux-stage
       run:
-        path: graviton-repo/ci/create-db.sh
+        path: ci-repo/ci/create-db.sh
         args:
           - {{skip-long-test}}
           - {{s3-access-key}}
           - {{s3-secret}}
           - {{stardog-version}}
-          - graviton-repo
+          - ci-repo
           - linux-stage
           - envdir
           - launch-outdir
+    on_failure:
+      task: cleanup
+      image: ci-docker-image
+      config:
+        platform: linux
+        inputs:
+          - name: ci-repo
+          - name: envdir
+          - name: launch-outdir
+          - name: linux-stage
+        run:
+          path: ci-repo/ci/stop-cluster.sh
+          args:
+            - {{skip-long-test}}
+            - {{s3-access-key}}
+            - {{s3-secret}}
+            - ci-repo
+            - linux-stage
+            - envdir
+            - launch-outdir
+
   - task: destroy
-    file: graviton-repo/ci/destroy-cluster.yml
+    image: ci-docker-image
+    config:
+      platform: linux
+      inputs:
+      - name: ci-repo
+      - name: envdir
+      - name: launch-outdir
+      - name: linux-stage
+      run:
+        path: ci-repo/ci/stop-cluster.sh
+        args:
+          - {{skip-long-test}}
+          - {{s3-access-key}}
+          - {{s3-secret}}
+          - ci-repo
+          - linux-stage
+          - envdir
+          - launch-outdir
 
 - name: publish
   plan:
@@ -202,6 +252,8 @@ jobs:
           - linux-stage
           - darwin-stage
           - exe-output
+      params:
+        GIT_SSH_KEY: {{github_private_key}}
   - aggregate:
     - put: linux-final
       params:

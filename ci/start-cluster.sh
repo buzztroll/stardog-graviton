@@ -31,6 +31,7 @@ LICENSE_FILE=$THIS_DIR/$ENV_DIR/stardog-license-key.bin
 
 sed -e "s^@@LICENSE@@^$LICENSE_FILE^" -e "s^@@RELEASE@@^$RELEASE_FILE^" -e "s^@@VERSION@@^$STARDOG_VERSION^" $GRAV_REPO/ci/default.json.template > $ENV_DIR/default.json
 
+ls -l $GRAV_EXE
 set +e
 $GRAV_EXE launch --force $LAUNCH_NAME
 rc=$?
@@ -40,4 +41,7 @@ if [ $rc -ne 0 ]; then
     echo "FAILED"
     exit 1
 fi
+
+ls $STARDOG_VIRTUAL_APPLIANCE_CONFIG_DIR/
+cp -r $STARDOG_VIRTUAL_APPLIANCE_CONFIG_DIR/* $OUT_DIR/
 exit 0

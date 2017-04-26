@@ -1,0 +1,20 @@
+---
+platform: linux
+image: ci-docker-image
+
+inputs:
+  - name: graviton-repo
+  - name: envdir
+  - name: launch-outdir
+  - name: linux-stage
+
+run:
+  path: graviton-repo/ci/stop-cluster.sh
+  args:
+   - {{skip-long-test}}
+   - {{s3-access-key}}
+   - {{s3-secret}}
+   - graviton-repo
+   - linux-stage
+   - envdir
+   - launch-outdir

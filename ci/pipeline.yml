@@ -3,8 +3,9 @@ resources:
 - name: dockerfile-repo
   type: git
   source:
-    branch: feature/pipeline2
-    uri: https://github.com/stardog-union/stardog-graviton.git
+    paths: [ "ci/Dockerfile" ]
+    branch: {{repo-branch}}
+    uri: {{repo-uri}}
 
 - name: graviton-repo
   type: git
@@ -167,25 +168,8 @@ jobs:
           - linux-stage
           - envdir
           - launch-outdir
-  ensure:
-    image: ci-docker-image
-    config:
-      platform: linux
-      inputs:
-      - name: graviton-repo
-      - name: envdir
-      - name: launch-outdir
-      - name: linux-stage
-      run:
-        path: graviton-repo/ci/stop-cluster.sh
-        args:
-          - {{skip-long-test}}
-          - {{s3-access-key}}
-          - {{s3-secret}}
-          - graviton-repo
-          - linux-stage
-          - envdir
-          - launch-outdir
+  - task: destroy
+    file: graviton-repo/ci/destroy-cluster.yml
 
 - name: publish
   plan:

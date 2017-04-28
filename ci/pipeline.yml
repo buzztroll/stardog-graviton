@@ -56,7 +56,7 @@ resources:
   source:
     region_name: {{s3-region}}
     bucket: {{final-bucket}}
-    regexp: (?P<version>.*)/stardog-graviton_(.*)linux_amd64.zip
+    regexp: stardog-graviton_(?P<version>.*)linux_amd64.zip
     access_key_id: {{s3-access-key}}
     secret_access_key: {{s3-secret}}
 
@@ -65,7 +65,7 @@ resources:
   source:
     bucket: {{final-bucket}}
     region_name: {{s3-region}}
-    regexp: (?P<version>.*)/stardog-graviton_(.*)darwin_amd64.zip
+    regexp: stardog-graviton_(?P<version>.*)darwin_amd64.zip
     access_key_id: {{s3-access-key}}
     secret_access_key: {{s3-secret}}
 

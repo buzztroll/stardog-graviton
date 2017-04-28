@@ -17,7 +17,9 @@ LINUX_GRAV_EXE=$(ls $THIS_DIR/$LINUX_STAGE/stardog-graviton-*)
 DARWIN_GRAV_EXE=$(ls $THIS_DIR/$DARWIN_STAGE/stardog-graviton-*)
 DESTNAME=$(basename $LINUX_GRAV_EXE)
 
-if [ "X$TAG" != "X" ]; then
+VER=$(echo $DESTNAME | sed 's/stardog-graviton-//')
+
+if [ "X$TAG" != "X0" ]; then
     DESTNAME=stardog-graviton-$TAG
     pushd $GRAV_REPO
 
@@ -30,13 +32,16 @@ if [ "X$TAG" != "X" ]; then
     git tag
     echo "Push the tags $GIT_SSH_COMMAND"
     git push origin $TAG
+    VER=$TAG
     popd
 fi
 
 echo "make the dirs"
 ls $EXE_OUTPUT
-mkdir -p $EXE_OUTPUT/linux
-mkdir -p $EXE_OUTPUT/darwin
+mkdir -p $EXE_OUTPUT/$VER
 
-cp $LINUX_GRAV_EXE $EXE_OUTPUT/linux/$DESTNAME
-cp $DARWIN_GRAV_EXE $EXE_OUTPUT/darwin/$DESTNAME
+cp $LINUX_GRAV_EXE stardog-graviton
+zip "$EXE_OUTPUT/$VER/stardog-graviton_$VER""_linux_amd64.zip" stardog-graviton
+cp $DARWIN_GRAV_EXE stardog-graviton
+zip "$EXE_OUTPUT/$VER/stardog-graviton_$VER""_darwin_amd64.zip" stardog-graviton
+

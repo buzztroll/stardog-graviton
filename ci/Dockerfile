@@ -1,6 +1,7 @@
 FROM ubuntu
 
 RUN apt-get update
+
 RUN apt-get install -y python curl wget unzip make git groff openjdk-8-jdk
 RUN wget https://storage.googleapis.com/golang/go1.8.1.linux-amd64.tar.gz
 RUN tar -C /usr/local/ -zxvf go1.8.1.linux-amd64.tar.gz

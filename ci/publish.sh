@@ -20,13 +20,6 @@ DARWIN_ZIP=$OUTPUT_DIR/$VER/$DARWIN_BASE_NAME
 
 echo "aws --debug --region us-east-1 s3 cp $LINUX_ZIP s3://$S3_BUCKET/$LINUX_BASE_NAME"
 
-echo "RRRRRRR"
-env
-echo "RRRRRRR"
-
-ls -l $LINUX_ZIP
-ls -l $DARWIN_ZIP
-
 cat /etc/issue
 aws --version
 

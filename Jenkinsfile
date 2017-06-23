@@ -11,6 +11,7 @@ pipeline {
         STARDOG_LICENSE = credentials('stardog_license_base64')
         AWS_ACCESS_KEY_ID = credentials('BUZZ_AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('BUZZ_AWS_SECRET_ACCESS_KEY')
+        GITHUB_CREDS = credentials('buzzgithub')
     }
     parameters {
         booleanParam(name: 'ACCEPTANCE_TESTS', defaultValue: true, description: 'Run the ong acceptance tests')

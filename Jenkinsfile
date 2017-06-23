@@ -17,6 +17,8 @@ pipeline {
         string(name: 'TAG_VERSION', defaultValue: '', description: 'Run a Gradle test group')
         string(name: 'STARDOG_VERSION', defaultValue: '5.0', description: 'The version of Stardog to use with these tests')
         string(name: 'AMI', defaultValue: '', description: 'The ami to use as the base.  Advanced for debugging')
+        string(name: 'MERGE_BRANCH', defaultValue: '', description: 'The branch to merge into')
+        string(name: 'REMOTE_REPO', defaultValue: '', description: 'The repository to push into')
         string(name: 'S3_BUCKET', defaultValue: 'graviton-releases', description: 'The S3 bucket where artifacts will be published')
     }
     stages {
@@ -37,7 +39,7 @@ pipeline {
             }
         }
         stage('Acceptance Tests') {
-            when { expression { params.ACCEPTANCE_TESTS == true } }
+            when { expression { params.ACCEPTANCE_TESTS } }
             steps {
                 sh "./ci/make-env.sh"
                 script {
@@ -65,6 +67,12 @@ pipeline {
                     }
                 }
                 sh "./ci/stop-cluster.sh"
+            }
+        }
+        stage('Merge and push') {   
+            when { expression { params.S3_BUCKET != '' && params.REMOTE_REPO != ''} }             
+            steps {
+                sh "./ci/merge.sh"
             }
         }
         stage('Publish') {                

@@ -17,4 +17,11 @@ echo $LAUNCH_NAME > $OUTPUT_DIR/name
 RELEASE_FILE=$OUTPUT_DIR/stardog-$STARDOG_VERSION.zip
 LICENSE_FILE=$OUTPUT_DIR/stardog-license-key.bin
 
+set +e
 $GRAV_EXE launch --force $LAUNCH_NAME
+if [ $rc -ne 0 ]; then
+    cat $STARDOG_VIRTUAL_APPLIANCE_CONFIG_DIR/deployments/$LAUNCH_NAME/logs/graviton.log
+    echo "FAILED"
+    exit 1
+fi
+exit 0

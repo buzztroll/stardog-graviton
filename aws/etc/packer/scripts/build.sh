@@ -8,11 +8,6 @@ sudo add-apt-repository ppa:vbernat/haproxy-1.6 -y
 
 sudo apt-get install apt-transport-https unzip openjdk-8-jdk haproxy awscli python3 python3-pip jq libyaml-dev python3-yaml runit python3-boto3 supervisor -y
 
-sudo sh -c "echo 'deb https://apt.datadoghq.com/ stable main' > /etc/apt/sources.list.d/datadog.list"
-sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 C7A7DA52
-sudo apt-get update
-sudo apt-get install datadog-agent
-
 # Make some directories writable for the main user
 sudo chmod 775 -R /usr/local
 sudo chown -R ubuntu /usr/local

@@ -20,19 +20,11 @@ if [ 'X${custom_log4j_data}' != 'X' ]; then
     echo '${custom_log4j_data}' | /usr/bin/base64 -d > $STARDOG_HOME/log4j2.xml
 fi
 
-cnt=0
-rc=1
-while [ $rc -ne 0 ]; do
-	cnt=`expr $cnt + 1`
-	if [ $cnt -gt 10 ]; then
-		exit 1
-	fi
-	sleep 30
-	rm -f /mnt/data/stardog-home/system.lock
-    /usr/local/bin/stardog-admin server start ${server_opts} --home $STARDOG_HOME --port 5821
-    /usr/local/bin/stardog-wait-for-socket 2 localhost:5821
-    rc=$?
-done
+echo '${environment_variables}' > /etc/stardog.env.sh
+rm -f /mnt/data/stardog-home/system.lock
+systemctl enable stardog
+systemctl start stardog
+/usr/local/bin/stardog-wait-for-socket 20 localhost:5821
 
 echo "Running the custom script..."
 CUSTOM_SCRIPT=/tmp/custom

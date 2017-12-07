@@ -42,7 +42,10 @@ def get_all_logs(ips):
         b = get_log(ip, dst_dir, "/mnt/data/stardog-home/logs/*", src_is_dir=True)
         if b:
             logs_copied += 1
-        system_logs = ['/var/log/syslog', '/var/log/auth.log', '/var/log/kern.log', '/var/log/cloud-init.log', '/var/log/cloud-init-output.log']
+        system_logs = [
+            '/var/log/syslog', '/var/log/auth.log', '/var/log/kern.log',
+            '/var/log/cloud-init.log', '/var/log/cloud-init-output.log',
+            '/etc/stardog.env.sh']
         for l in system_logs:
             b = get_log(ip, dst_dir, l)
             if b:

@@ -56,7 +56,11 @@
       "sudo -E python3 setup.py install",
       "sudo mkdir -p /etc/sv/zkmon",
       "sudo mv /tmp/zookeeper_sv /etc/sv/zkmon/run",
-      "sudo chmod 755 /etc/sv/zkmon/run"
+      "sudo chmod 755 /etc/sv/zkmon/run",
+      "sudo mv /tmp/stardog.service /etc/systemd/system/stardog.service",
+      "sudo mv /tmp/stardog-start.sh /opt/stardog/stardog-server.sh",
+      "sudo chmod 755 /opt/stardog/stardog-server.sh",
+      "systemctl disable stardog"
     ]
     },
     {

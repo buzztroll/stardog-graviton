@@ -169,7 +169,7 @@ func getAmiVersion(c sdutils.AppContext, sess *session.Session, conf *aws.Config
 			return t.Value, nil
 		}
 	}
-	return "", nil
+	return nil, nil
 }
 
 // CheckKeyName will return true or false based on the existance of the keyname in the
